@@ -1,4 +1,4 @@
-name: Run Tests
+name: Run Tests and Build Docker Image
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  test:
+  test-and-build:
     runs-on: ubuntu-latest
     
     steps:
@@ -25,3 +25,16 @@ jobs:
     
     - name: Run tests
       run: python -m pytest test_addition.py -v
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: false
+        tags: my-python-app:latest
+    
+    - name: Test Docker image
+      run: docker run my-python-app:latest
